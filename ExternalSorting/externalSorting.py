@@ -2,159 +2,172 @@ import DEPQ
 import os
 
 buffer = []
-global_var = 0
-gjob = []
+file_counter = 0
+global_list = []
 
 # Merging File
-def mergingFile(file1,file2,file3):
-    global global_var
-    global_var = global_var - 1
+def mergePassFuntion(file1,file2,file3):
+    global file_counter
+    file_counter = file_counter - 1
     # print(f"Merging file {file1}, {file2} and {file3}")
 
-    bjob = open(file2, "r")
-    bjobData = bjob.readlines()
-    bjob.close()
+    file_data=[]
+    with open(file2, "r") as fp2:
+        file_data = fp2.readlines()
 
-    ajob = open(file1, "a")
-    ajob.write(" ")
-    for _ in bjobData:
-        ajob.write(_)
-    ajob.close()
+    with open(file1, "a") as fp1:
+        fp1.write(" ")
+        for x in file_data:
+            fp1.write(x)
 
-    djob = open(file1, "r")
-    djobData = djob.readlines()
-    djob.close()
+    data_list=[]
+    with open(file1, "r") as fp:
+        data_list = fp.readlines()
 
-    gjob = open(file3, "r")
-    gjobData = gjob.readlines()
-    gjob.close()
+    global_list=[]
+    with open(file3, "r") as fp3:
+        global_list = fp3.readlines()
 
-    fjob = open(file2, "w")
-    for __ in djobData:
-        fjob.write(__)
-    fjob.write(" ")
-    for i in gjobData:
-        fjob.write(i)
-    fjob.close()
-    os.remove(f"E:/DOR/Code/ExternalSorting/ExternalSorting/{file3}")
-    os.remove(f"E:/DOR/Code/ExternalSorting/ExternalSorting/{file1}")
+    with open(file2, "w") as fp:
+        for x in data_list:
+            fp.write(x)
+        fp.write(" ")
+        for item in global_list:
+            fp.write(item)
+    # "C:\Users\haris\Downloads\ExternalSorting-main\ExternalSorting-main\ExternalSorting\large_data1.txt"
+    # os.remove(f"C:/Users/haris/Downloads/ExternalSorting-main/ExternalSorting-main/ExternalSorting/{file3}")
+    # os.remove(f"C:/Users/haris/Downloads/ExternalSorting-main/ExternalSorting-main/ExternalSorting/{file1}")
 
     return file2
 
 
 # Main funtion of external sorting
-def externalDataSorting(filename,Depq):
-    file = open(filename, "r")
-    ajob = file.readlines()
-    file.close()
-    # print(ajob)
-    wjob = []
-    bjob = []
+def externalSort(filename,Depq):
+    with open(filename, "r") as file:
+        element_list = file.readlines()
+    # print(element_list)
+    data_list = []
     minDataList = []
     maxDataList = []
 
-    for _ in ajob:
-        cjob = [i for i in _.split(" ")]
-        wjob = wjob+cjob
-    wjob.pop()
-
-    for i in range(len(wjob)):
-        bjob.append(int(wjob.pop(0)))
-
-    # print(bjob)
-    num = len(bjob)
-    if num <= 30:
+    for item in element_list:
+        item = item.strip()
+        # print(item)
+        data = [int(i) for i in item.split(" ") if i!='']
+        # print(data)
+        data_list = data_list+ data
+    # print(data_list)
+    # print(data_list)
+    num = len(data_list)
+    if num <= 10:
         # print(f"Inside the small sorting!")
-        while len(bjob):
-            a = bjob.pop(0)
+        while len(data_list):
+            a = data_list.pop(0)
             Depq.insertintoDEPQ(a)
+        # print(Depq.minq.root.val)
+        # Depq.minq.display()
+        # Depq.maxq.display()
+        # Depq.minq.displayCorrespondance()
+        # Depq.maxq.displayCorrespondance()
 
-        for l in range(num - 1):
-            Depq.deleteminimumElementDEPQ()
-        gjob.append(Depq.buffer.pop(0))
-        Depq.minq.display()
-
-        Depq.maxq.display()
-        print(gjob)
-        sjob = open(filename, "w")
-        while len(gjob):
-            sjob.write(f"{gjob.pop(0)} ")
-        sjob.close()
+        for l in range(num-1):
+            deleted_data=Depq.deleteminimumElementDEPQ()
+            global_list.append(deleted_data)
+        # print(global_list,"hooooooooo")
+        
+        # global_list.append(Depq.buffer[0])
+        # print(global_list)
+        with open(filename, "w") as fp:
+            while len(global_list):
+                fp.write(f"{global_list.pop(0)} ")
         return filename
 
-    global global_var
-    global_var = global_var + 1
+    global file_counter
+    file_counter = file_counter + 1
 
-    mjob = []
-    for i in range(30):
-        mjob.append(bjob.pop(0))
-
-    while len(mjob):
-        a = mjob.pop(0)
+    data = []
+    for i in range(10):
+        data.append(data_list.pop(0))
+    # print(data)
+    while len(data):
+        a = data.pop(0)
         Depq.insertintoDEPQ(a)
-    num = len(bjob)
-
-    while(len(bjob)):
-        a = bjob.pop(0)
-        if a < Depq.minq.root.data:
+    num = len(data_list)
+    # print(data_list)
+    # print(num)
+    # Depq.minq.display()
+    # Depq.maxq.display()
+    # Depq.minq.displayCorrespondance()
+    # Depq.maxq.displayCorrespondance()
+    # print(Depq.minq.root.val)
+    while(len(data_list)):
+        a = data_list.pop(0)
+        # print(a,"-----",Depq.minq.root.val,Depq.maxq.root.val)
+        if a < Depq.minq.root.val:
             minDataList.append(a)
-        elif a > Depq.maxq.root.data:
+        elif a > Depq.maxq.root.val:
             maxDataList.append(a)
         else:
-            minDataList.append(Depq.minq.root.data)
-            Depq.deleteminimumElementDEPQ()
+            minDataList.append(Depq.minq.root.val)
+            d = Depq.deleteminimumElementDEPQ()
             Depq.insertintoDEPQ(a)
+        # print(Depq.minq.root.val,"----mini-----")
 
+    # Depq.minq.display()
+    # Depq.maxq.display()
+    # print(Depq.minq.root.val)
+    # print("max",maxDataList)
+    # print("min",minDataList)
 
-    while len(gjob):
-        gjob.pop(0)
+    while len(global_list):
+        global_list.pop(0)
 
+    # Depq.minq.displayCorrespondance()
+    for l in range(10-1):
+        deleted_data=Depq.deleteminimumElementDEPQ()
+        # print(deleted_data,Depq.buffer)
+        global_list.append(deleted_data)
+    global_list.append(Depq.buffer[0])
+    small_element_len = len(minDataList)
+    larger_element_len = len(maxDataList)
 
-    for l in range(30):
-        Depq.deleteminimumElementDEPQ()
-    gjob.append(Depq.buffer.pop(0))
+    print(small_element_len,larger_element_len)
+    print(global_list)
+    print(minDataList)
+    print(maxDataList)
 
+    with open(filename, "w") as fp:
+        while len(global_list):
+            fp.write(f"{global_list.pop(0)} ")
 
-    number_of_element_small_list = len(minDataList)
-    number_of_element_large_list = len(minDataList)
+    with open(f"small_data{file_counter}.txt","w") as fp1:
+        while len(minDataList):
+            fp1.write(f"{minDataList.pop(0)} ")
 
-
-
-    sjob = open(filename, "w")
-    while len(gjob):
-        sjob.write(f"{gjob.pop(0)} ")
-    sjob.close()
-
-    jjob = open(f"newFileSmallerData{global_var}.txt","w")
-    while len(minDataList):
-        jjob.write(f"{minDataList.pop(0)} ")
-    jjob.close()
-
-    ljob = open(f"newFileLargerData{global_var}.txt","w")
-    while len(maxDataList):
-        ljob.write(f"{maxDataList.pop(0)} ")
-    ljob.close()
-
-    if number_of_element_small_list != 0:
+    with open(f"large_data{file_counter}.txt","w") as fp2:
+        while len(maxDataList):
+            fp2.write(f"{maxDataList.pop(0)} ")
+    if small_element_len != 0:
         # print("function is called for small data!")
-        filename = externalDataSorting(f"newFileSmallerData{global_var}.txt",Depq)
+        filename = externalSort(f"small_data{file_counter}.txt",Depq)
 
 
-    if number_of_element_large_list != 0:
+    if larger_element_len != 0:
         # print("function is called for Large data!")
-        filename = externalDataSorting(f"newFileLargerData{global_var}.txt",Depq)
-    zjob = mergingFile(f"newFileSmallerData{global_var}.txt",filename,f"newFileLargerData{global_var}.txt")
+        filename = externalSort(f"large_data{file_counter}.txt",Depq)
+    merged_file = mergePassFuntion(f"small_data{file_counter}.txt",filename,f"large_data{file_counter}.txt")
 
-    return zjob
+    return merged_file
 
 
 if __name__ == "__main__":
     Depq = DEPQ.DoubleEndedQueue()
 
-    fileData = externalDataSorting("data.txt",Depq)
+    fileData = externalSort("data.txt",Depq)
     # print(f"fileData value : {fileData}")
 
-    displayData = open(fileData,"r")
-    wjob = displayData.readlines()
-    displayData.close()
-    print(wjob)
+    file_list=[]
+    with open(fileData,"r") as fp:
+        file_list = fp.readlines()
+    
+    print(file_list)
